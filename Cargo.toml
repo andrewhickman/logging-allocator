@@ -1,0 +1,16 @@
+[package]
+name = "logging-allocator"
+description = "Global allocator that logs on allocation for debug purposes."
+version = "0.1.0"
+authors = ["Andrew Hickman <andrew.hickman1@sky.com>"]
+repository = "https://github.com/andrewhickman/logging-allocator"
+documentation = "https://docs.rs/logging-allocator"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+edition = "2018"
+
+[dependencies]
+log = "0.4.6"
+simple_logger = "1.0.1"
+
+[dev-dependencies]
