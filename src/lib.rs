@@ -3,6 +3,9 @@ use std::cell::Cell;
 use std::fmt;
 use std::sync::atomic::{AtomicBool, Ordering};
 
+#[cfg(feature = "warn")]
+const WARNING_THRESHOLD: usize = 1_000_000;
+
 /// A wrapper allocator that logs messages on allocation.
 pub struct LoggingAllocator<A = System> {
     enabled: AtomicBool,
@@ -58,6 +61,12 @@ where
     A: GlobalAlloc,
 {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+        #[cfg(feature = "warn")]
+        {
+            if layout.size() > WARNING_THRESHOLD {
+                log::warn!("large allocation at {:?}", backtrace::Backtrace::new());
+            }
+        }
         let ptr = self.allocator.alloc(layout);
         if self.logging_enabled() {
             run_guarded(|| {
@@ -85,6 +94,12 @@ where
     }
 
     unsafe fn realloc(&self, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
+        #[cfg(feature = "warn")]
+        {
+            if new_size > WARNING_THRESHOLD {
+                log::warn!("large reallocation at {:?}", backtrace::Backtrace::new());
+            }
+        }
         let new_ptr = self.allocator.realloc(ptr, layout, new_size);
         if self.logging_enabled() {
             run_guarded(|| {

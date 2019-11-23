@@ -9,8 +9,12 @@ license = "MIT/Apache-2.0"
 readme = "README.md"
 edition = "2018"
 
+[features]
+warn = ["backtrace"]
+
 [dependencies]
 log = "0.4.6"
+backtrace = { version = "0.3.40", optional = true }
 
 [dev-dependencies]
 simple_logger = "1.0.1"
