@@ -3,8 +3,6 @@ use std::cell::Cell;
 use std::fmt;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-use log::trace;
-
 /// A wrapper allocator that logs messages on allocation.
 pub struct LoggingAllocator<A = System> {
     enabled: AtomicBool,
@@ -63,7 +61,7 @@ where
         let ptr = self.allocator.alloc(layout);
         if self.logging_enabled() {
             run_guarded(|| {
-                trace!("alloc {}", Fmt(ptr, layout.size(), layout.align()));
+                log::trace!("alloc {}", Fmt(ptr, layout.size(), layout.align()));
             });
         }
         ptr
@@ -72,7 +70,7 @@ where
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
         self.allocator.dealloc(ptr, layout);
         if self.logging_enabled() {
-            run_guarded(|| trace!("dealloc {}", Fmt(ptr, layout.size(), layout.align()),));
+            run_guarded(|| log::trace!("dealloc {}", Fmt(ptr, layout.size(), layout.align()),));
         }
     }
 
@@ -80,7 +78,7 @@ where
         let ptr = self.allocator.alloc_zeroed(layout);
         if self.logging_enabled() {
             run_guarded(|| {
-                trace!("alloc_zeroed {}", Fmt(ptr, layout.size(), layout.align()));
+                log::trace!("alloc_zeroed {}", Fmt(ptr, layout.size(), layout.align()));
             });
         }
         ptr
@@ -90,7 +88,7 @@ where
         let new_ptr = self.allocator.realloc(ptr, layout, new_size);
         if self.logging_enabled() {
             run_guarded(|| {
-                trace!(
+                log::trace!(
                     "realloc {} to {}",
                     Fmt(ptr, layout.size(), layout.align()),
                     Fmt(new_ptr, new_size, layout.align())
